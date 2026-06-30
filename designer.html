@@ -937,6 +937,11 @@
         }
 
         @media (max-width: 600px) {
+            html, body {
+                overflow-x: hidden;
+                width: 100%;
+            }
+
             .top-bar {
                 overflow: hidden;
             }
@@ -957,6 +962,16 @@
             .drawer-content {
                 padding: 20px;
                 max-width: 100%;
+            }
+
+            .header-main-inner {
+                padding: 0 15px;
+                gap: 10px;
+            }
+
+            .brand-logo {
+                font-size: 1.4rem;
+                letter-spacing: 3px;
             }
 
             .products-grid-catalog {
@@ -988,7 +1003,7 @@
             }
 
             .main-content {
-                padding: 0 20px;
+                padding: 0 15px;
             }
         }
     </style>
