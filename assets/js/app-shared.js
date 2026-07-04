@@ -7,6 +7,48 @@ function findProductById(id) {
     return perfumesData.find(p => p.id === id) || null;
 }
 
+// Brand logos for the "shop by brand" tiles. Add an entry here once a logo file exists in /Logos.
+const brandLogos = {
+    "Lattafa": "Logos/Lattafa.webp",
+    "Armaf": "Logos/Armaf.webp",
+    "Afnan": "Logos/Afnan.webp",
+    "Rasasi": "Logos/Rasasi.webp",
+    "Jean Paul Gaultier": "Logos/Jean_Paul_Gaultier.webp",
+    "Yves Saint Laurent": "Logos/Yves_saint_laurent.webp",
+    "Giorgio Armani": "Logos/Georgio_Armani.webp"
+};
+
+// Renders the brand-filter tiles for a catalog page (arabes.html / designer.html).
+// `products` should already be scoped to that page's category.
+function renderBrandFilterBar(containerId, products, activeBrand, onSelectFnName) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    const brandCounts = {};
+    products.forEach(p => { brandCounts[p.brand] = (brandCounts[p.brand] || 0) + 1; });
+    const brands = Object.keys(brandCounts).sort((a, b) => brandCounts[b] - brandCounts[a]);
+
+    const allTile = `
+        <div class="brand-tile ${activeBrand === 'Todos' ? 'active' : ''}" onclick="${onSelectFnName}('Todos')">
+            <div class="brand-tile-logo-wrap brand-tile-all">Todas</div>
+            <span class="brand-tile-name">Todas las marcas</span>
+        </div>`;
+
+    const brandTiles = brands.map(brand => {
+        const logo = brandLogos[brand];
+        const inner = logo
+            ? `<img src="${logo}" alt="${brand}">`
+            : `<span class="brand-tile-fallback">${brand.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()}</span>`;
+        return `
+        <div class="brand-tile ${activeBrand === brand ? 'active' : ''}" onclick="${onSelectFnName}('${brand}')">
+            <div class="brand-tile-logo-wrap">${inner}</div>
+            <span class="brand-tile-name">${brand}</span>
+        </div>`;
+    }).join('');
+
+    container.innerHTML = allTile + brandTiles;
+}
+
 // DOM Elements
 let cartCountEl;
 let wishlistCountEl;
@@ -55,6 +97,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (hsb && hsi) {
         hsb.addEventListener('click', () => openSearch(hsi.value));
         hsi.addEventListener('keypress', e => { if (e.key === 'Enter') openSearch(hsi.value); });
+    }
+
+    const mobileSearchBtn = document.getElementById('mobile-search-btn');
+    if (mobileSearchBtn) {
+        mobileSearchBtn.addEventListener('click', () => openSearch());
     }
 
     // Dynamic search results container and styles injection
@@ -248,6 +295,20 @@ function performSearch(query, container) {
     `).join('');
 }
 
+function getWhatsAppNumber() {
+    // Dynamically retrieve the WhatsApp number from footer if possible, fallback to Ecuador placeholder
+    const whatsappLinkEl = document.querySelector('a[href*="wa.me"]');
+    let whatsappNumber = "593999999999";
+    if (whatsappLinkEl) {
+        const href = whatsappLinkEl.getAttribute('href');
+        const match = href.match(/wa\.me\/([0-9]+)/);
+        if (match && match[1]) {
+            whatsappNumber = match[1];
+        }
+    }
+    return whatsappNumber;
+}
+
 function checkoutWhatsApp() {
     if (cart.length === 0) {
         alert("Tu bolsa de compras está vacía. Agrega algunos perfumes antes de finalizar tu compra.");
@@ -283,19 +344,7 @@ function checkoutWhatsApp() {
 
     // Encode message for WhatsApp URL
     const encodedMessage = encodeURIComponent(message);
-    
-    // Dynamically retrieve the WhatsApp number from footer if possible, fallback to Ecuador placeholder
-    const whatsappLinkEl = document.querySelector('a[href*="wa.me"]');
-    let whatsappNumber = "593999999999";
-    if (whatsappLinkEl) {
-        const href = whatsappLinkEl.getAttribute('href');
-        const match = href.match(/wa\.me\/([0-9]+)/);
-        if (match && match[1]) {
-            whatsappNumber = match[1];
-        }
-    }
-
-    const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
+    const whatsappUrl = `https://wa.me/${getWhatsAppNumber()}?text=${encodedMessage}`;
     window.open(whatsappUrl, '_blank');
 }
 
@@ -380,9 +429,6 @@ function updateWishlist() {
                 <button class="drawer-item-remove" style="color:var(--dorado);" onclick="addToCart('${item.id}');toggleWishlist('${item.id}');">Mover al Carrito</button>
             </div>
         </div>`).join('');
-    if (totalEl) {
-        totalEl.textContent = `$${cart.reduce((s, x) => s + x.price, 0).toFixed(2)}`;
-    }
 }
 
 // Dynamic Modals for FAQ, Shipping Policy, Originality Guarantee, and Notify-Me
@@ -851,7 +897,13 @@ window.submitNotifyForm = function(event, categoryName) {
     const contact = document.getElementById('notify-contact').value;
     const bodyEl = document.getElementById('lunaria-modal-body');
 
-    // Simulate registration logic and show success message
+    let message = `¡Hola LUNARIA! 🌟\n\nQuiero que me avisen cuando llegue la colección de *${categoryName}*.\n\n`;
+    message += `*Nombre:* ${name}\n`;
+    message += `*Correo o WhatsApp:* ${contact}\n`;
+    const encodedMessage = encodeURIComponent(message);
+    const whatsappUrl = `https://wa.me/${getWhatsAppNumber()}?text=${encodedMessage}`;
+    window.open(whatsappUrl, '_blank');
+
     if (bodyEl) {
         bodyEl.innerHTML = `
             <div class="success-notify-icon">✓</div>

@@ -7,7 +7,21 @@
     <title>Colección Nicho | LUNARIA</title>
     <link rel="icon" href="assets/images/favicon.png" type="image/png">
     <meta name="description"
-        content="Descubre nuestra exclusiva colección de perfumes árabes de lujo 100% originales en Ecuador. Marcas premium como Lattafa, Rasasi, Armaf, Afnan y Swiss Arabian.">
+        content="Perfumería de nicho: fragancias de autor, exclusivas y únicas creadas para coleccionistas. Muy pronto en LUNARIA Ecuador.">
+
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="LUNARIA">
+    <meta property="og:title" content="Colección Nicho | LUNARIA">
+    <meta property="og:description"
+        content="Fragancias de autor, exclusivas y únicas creadas para coleccionistas. Muy pronto en LUNARIA Ecuador.">
+    <meta property="og:image" content="https://imouraad.github.io/Lunaria/PortadaPerfumes/Nichos.png">
+    <meta property="og:url" content="https://imouraad.github.io/Lunaria/nicho.html">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Colección Nicho | LUNARIA">
+    <meta name="twitter:description"
+        content="Fragancias de autor, exclusivas y únicas creadas para coleccionistas. Muy pronto en LUNARIA Ecuador.">
+    <meta name="twitter:image" content="https://imouraad.github.io/Lunaria/PortadaPerfumes/Nichos.png">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -38,6 +52,7 @@
 
         html {
             overflow-x: hidden;
+            overflow-y: scroll;
         }
 
         body {
@@ -233,6 +248,10 @@
             fill: none;
             stroke: currentColor;
             stroke-width: 1.8;
+        }
+
+        .mobile-search-btn {
+            display: none;
         }
 
         .badge-count {
@@ -941,6 +960,10 @@
                 display: none;
             }
 
+            .mobile-search-btn {
+                display: flex;
+            }
+
             .mobile-menu-btn {
                 display: block;
             }
@@ -1003,6 +1026,12 @@
             </div>
 
             <div class="nav-actions">
+                <button class="nav-icon-btn mobile-search-btn" id="mobile-search-btn" aria-label="Buscar">
+                    <svg viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                </button>
                 <button class="nav-icon-btn" id="wishlist-btn" aria-label="Favoritos">
                     <svg viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round"

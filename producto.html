@@ -8,6 +8,22 @@
     <link rel="icon" href="assets/images/favicon.png" type="image/png">
     <meta name="description"
         content="LUNARIA - Perfumería 100% original. Compra fragancias árabes y de diseñador con envíos rápidos a todo el país.">
+
+    <meta property="og:type" content="product">
+    <meta property="og:site_name" content="LUNARIA">
+    <meta property="og:title" content="Detalle del Perfume | LUNARIA" id="og-title">
+    <meta property="og:description"
+        content="LUNARIA - Perfumería 100% original. Compra fragancias árabes y de diseñador con envíos rápidos a todo el país."
+        id="og-description">
+    <meta property="og:image" content="https://imouraad.github.io/Lunaria/assets/images/hero.png" id="og-image">
+    <meta property="og:url" content="https://imouraad.github.io/Lunaria/producto.html" id="og-url">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Detalle del Perfume | LUNARIA" id="twitter-title">
+    <meta name="twitter:description"
+        content="LUNARIA - Perfumería 100% original. Compra fragancias árabes y de diseñador con envíos rápidos a todo el país."
+        id="twitter-description">
+    <meta name="twitter:image" content="https://imouraad.github.io/Lunaria/assets/images/hero.png" id="twitter-image">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -38,6 +54,7 @@
 
         html {
             overflow-x: hidden;
+            overflow-y: scroll;
         }
 
         body {
@@ -233,6 +250,10 @@
             fill: none;
             stroke: currentColor;
             stroke-width: 1.8;
+        }
+
+        .mobile-search-btn {
+            display: none;
         }
 
         .badge-count {
@@ -1093,6 +1114,10 @@
                 display: none;
             }
 
+            .mobile-search-btn {
+                display: flex;
+            }
+
             .mobile-menu-btn {
                 display: block;
             }
@@ -1182,6 +1207,12 @@
             </div>
 
             <div class="nav-actions">
+                <button class="nav-icon-btn mobile-search-btn" id="mobile-search-btn" aria-label="Buscar">
+                    <svg viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                </button>
                 <button class="nav-icon-btn" id="wishlist-btn" aria-label="Favoritos">
                     <svg viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round"
@@ -1448,6 +1479,23 @@
 
             // Update Page Title
             document.title = `${currentProduct.name} - ${currentProduct.brand} | LUNARIA`;
+
+            // Update Open Graph / Twitter share tags with this product's info
+            const baseUrl = 'https://imouraad.github.io/Lunaria/';
+            const ogTitleText = `${currentProduct.name} - ${currentProduct.brand} | LUNARIA`;
+            const ogDescText = currentProduct.description
+                ? currentProduct.description.slice(0, 160)
+                : document.querySelector('meta[name="description"]').content;
+            const ogImageUrl = new URL(currentProduct.image, baseUrl).href;
+            const ogUrl = `${baseUrl}producto.html?id=${currentProduct.id}`;
+
+            document.getElementById('og-title').setAttribute('content', ogTitleText);
+            document.getElementById('og-description').setAttribute('content', ogDescText);
+            document.getElementById('og-image').setAttribute('content', ogImageUrl);
+            document.getElementById('og-url').setAttribute('content', ogUrl);
+            document.getElementById('twitter-title').setAttribute('content', ogTitleText);
+            document.getElementById('twitter-description').setAttribute('content', ogDescText);
+            document.getElementById('twitter-image').setAttribute('content', ogImageUrl);
 
             // Breadcrumbs
             const catLink = document.getElementById('breadcrumb-category-link');
