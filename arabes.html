@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Perfumes Árabes | LUNARIA</title>
+    <link rel="icon" href="assets/images/favicon.png" type="image/png">
     <meta name="description"
         content="Descubre nuestra exclusiva colección de perfumes árabes de lujo 100% originales en Ecuador. Marcas premium como Lattafa, Rasasi, Armaf, Afnan y Swiss Arabian.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -94,19 +95,12 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            gap: 10px;
             font-size: 0.74rem;
             font-weight: 700;
             letter-spacing: 2.5px;
             text-transform: uppercase;
             z-index: 1000;
-        }
-
-        .top-bar-content {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            width: 100%;
         }
 
         .top-bar .gold {
@@ -116,11 +110,6 @@
         .top-bar .sep {
             color: rgba(255, 255, 255, 0.3);
             margin: 0 6px;
-        }
-
-        @keyframes topBarMarquee {
-            0% { transform: translate3d(0, 0, 0); }
-            100% { transform: translate3d(-100%, 0, 0); }
         }
 
         /* HEADER FILA 1 */
@@ -638,35 +627,32 @@
             z-index: 10000;
             opacity: 0;
             pointer-events: none;
-            transition: opacity 0.3s ease, visibility 0.3s ease;
-            visibility: hidden;
+            transition: opacity 0.3s ease;
         }
 
         .drawer-overlay.open {
             opacity: 1;
             pointer-events: auto;
-            visibility: visible;
         }
 
         .drawer-content {
             position: fixed;
             top: 0;
-            right: 0;
+            right: -450px;
             width: 100%;
             max-width: 450px;
             height: 100%;
             background: var(--blanco);
             box-shadow: -5px 0 25px rgba(0, 0, 0, 0.15);
             z-index: 10001;
-            transform: translate3d(100%, 0, 0);
-            transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            transition: right 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
             display: flex;
             flex-direction: column;
             padding: 30px;
         }
 
         .drawer-overlay.open .drawer-content {
-            transform: translate3d(0, 0, 0);
+            right: 0;
         }
 
         .drawer-header {
@@ -937,43 +923,6 @@
         }
 
         @media (max-width: 600px) {
-            html, body {
-                overflow-x: hidden;
-                width: 100%;
-            }
-
-            .top-bar {
-                overflow: hidden;
-            }
-
-            .top-bar-content {
-                display: inline-flex;
-                white-space: nowrap;
-                width: auto;
-                gap: 30px;
-                padding-left: 100%;
-                animation: topBarMarquee 25s linear infinite;
-            }
-
-            .top-bar-content span.sep {
-                margin: 0 10px;
-            }
-
-            .drawer-content {
-                padding: 20px;
-                max-width: 100%;
-            }
-
-            .header-main-inner {
-                padding: 0 15px;
-                gap: 10px;
-            }
-
-            .brand-logo {
-                font-size: 1.4rem;
-                letter-spacing: 3px;
-            }
-
             .products-grid-catalog {
                 grid-template-columns: 1fr;
             }
@@ -1003,7 +952,7 @@
             }
 
             .main-content {
-                padding: 0 15px;
+                padding: 0 20px;
             }
         }
     </style>
@@ -1013,13 +962,11 @@
 
     <!-- BARRA SUPERIOR -->
     <div class="top-bar">
-        <div class="top-bar-content">
-            🎁 <span class="gold">ESPECIAL DÍA DEL PADRE — 16 DE JUNIO</span>
-            <span class="sep">|</span>
-            ENVÍO GRATIS EN COMPRAS SOBRE $100
-            <span class="sep">|</span>
-            <span class="gold">USA EL CÓDIGO: PAPÁ2026</span> 🎁
-        </div>
+        ✨ <span class="gold">COLECCIÓN DE VERANO 2026</span>
+        <span class="sep">|</span>
+        ENVÍO GRATIS EN COMPRAS SOBRE $100
+        <span class="sep">|</span>
+        <span class="gold">100% ORIGINALES GARANTIZADOS</span> ✨
     </div>
 
     <!-- HEADER FILA 1 -->
@@ -1105,16 +1052,16 @@
                 <ul>
                     <li><a href="designer.html">Diseñador</a></li>
                     <li><a href="arabes.html">Árabes</a></li>
-                    <li><a href="nicho.html">Nicho</a></li>
-                    <li><a href="frescos.html">Frescos</a></li>
+                    <li><a href="javascript:void(0)" onclick="openNotifyModal('Nicho')">Nicho</a></li>
+                    <li><a href="javascript:void(0)" onclick="openNotifyModal('Frescos')">Frescos</a></li>
                 </ul>
             </div>
             <div class="footer-col">
                 <h4>Servicio al Cliente</h4>
                 <ul>
-                    <li><a href="#">Preguntas Frecuentes</a></li>
-                    <li><a href="#">Políticas de Envío</a></li>
-                    <li><a href="#">Garantía de Originalidad</a></li>
+                    <li><a href="javascript:void(0)" onclick="showInfoModal('faq')">Preguntas Frecuentes</a></li>
+                    <li><a href="javascript:void(0)" onclick="showInfoModal('shipping')">Políticas de Envío</a></li>
+                    <li><a href="javascript:void(0)" onclick="showInfoModal('originality')">Garantía de Originalidad</a></li>
                     <li><a href="#">Contacto</a></li>
                 </ul>
             </div>

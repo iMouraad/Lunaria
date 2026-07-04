@@ -382,4 +382,293 @@ function updateWishlist() {
                 <button class="drawer-item-remove" style="color:var(--dorado);" onclick="addToCart('${item.id}');toggleWishlist('${item.id}');">Mover al Carrito</button>
             </div>
         </div>`).join('');
+    if (totalEl) {
+        totalEl.textContent = `$${cart.reduce((s, x) => s + x.price, 0).toFixed(2)}`;
+    }
 }
+
+// Dynamic Modals for FAQ, Shipping Policy, Originality Guarantee, and Notify-Me
+document.addEventListener('DOMContentLoaded', () => {
+    // Inject Modal HTML container at the end of body
+    const modalHTML = `
+    <div class="lunaria-modal-overlay" id="lunaria-info-modal">
+        <div class="lunaria-modal-card">
+            <button class="lunaria-modal-close" onclick="closeInfoModal()">&times;</button>
+            <h3 class="lunaria-modal-title" id="lunaria-modal-title">Título del Modal</h3>
+            <div class="lunaria-modal-body" id="lunaria-modal-body">
+                Contenido del modal...
+            </div>
+        </div>
+    </div>`;
+    
+    const div = document.createElement('div');
+    div.innerHTML = modalHTML;
+    document.body.appendChild(div.firstElementChild);
+
+    // Inject CSS styles for Modals
+    const modalStyle = document.createElement('style');
+    modalStyle.textContent = `
+        .lunaria-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        .lunaria-modal-overlay.open {
+            opacity: 1;
+            visibility: visible;
+        }
+        .lunaria-modal-card {
+            background: #14120f;
+            border: 1px solid rgba(201, 169, 110, 0.3);
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            padding: 30px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+            position: relative;
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
+            color: #f5f0e8;
+            text-align: left;
+        }
+        .lunaria-modal-overlay.open .lunaria-modal-card {
+            transform: translateY(0);
+        }
+        .lunaria-modal-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: transparent;
+            border: none;
+            color: #c9a96e;
+            font-size: 1.8rem;
+            cursor: pointer;
+            line-height: 1;
+            transition: color 0.2s ease;
+        }
+        .lunaria-modal-close:hover {
+            color: #ffffff;
+        }
+        .lunaria-modal-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.8rem;
+            color: #c9a96e;
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(201, 169, 110, 0.15);
+            padding-bottom: 10px;
+        }
+        .lunaria-modal-body {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+        .lunaria-modal-body::-webkit-scrollbar {
+            width: 6px;
+        }
+        .lunaria-modal-body::-webkit-scrollbar-thumb {
+            background: var(--dorado, #c9a96e);
+            border-radius: 4px;
+        }
+        .lunaria-modal-body p {
+            margin-bottom: 15px;
+            color: rgba(245, 240, 232, 0.85);
+        }
+        .lunaria-modal-body h4 {
+            color: #c9a96e;
+            font-size: 1.1rem;
+            margin-top: 20px;
+            margin-bottom: 8px;
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 700;
+        }
+        .lunaria-form-group {
+            margin-bottom: 15px;
+        }
+        .lunaria-form-group label {
+            display: block;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #c9a96e;
+            margin-bottom: 6px;
+            font-weight: 700;
+        }
+        .lunaria-form-input {
+            width: 100%;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(201, 169, 110, 0.2);
+            border-radius: 6px;
+            padding: 10px 12px;
+            color: #fff;
+            font-family: inherit;
+            font-size: 0.9rem;
+            transition: border-color 0.2s;
+        }
+        .lunaria-form-input:focus {
+            border-color: #c9a96e;
+            outline: none;
+            background: rgba(255,255,255,0.06);
+        }
+        .btn-modal-submit {
+            display: block;
+            width: 100%;
+            background: #c9a96e;
+            color: #121212;
+            border: 1px solid #c9a96e;
+            padding: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            margin-top: 20px;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+        .btn-modal-submit:hover {
+            background: transparent;
+            color: #c9a96e;
+        }
+        .success-notify-icon {
+            font-size: 3rem;
+            color: #c9a96e;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+    `;
+    document.head.appendChild(modalStyle);
+
+    // Close modal on background click
+    const modalOverlay = document.getElementById('lunaria-info-modal');
+    if (modalOverlay) {
+        modalOverlay.addEventListener('click', e => {
+            if (e.target === modalOverlay) closeInfoModal();
+        });
+    }
+});
+
+// Modal Actions
+window.closeInfoModal = function() {
+    const modal = document.getElementById('lunaria-info-modal');
+    if (modal) {
+        modal.classList.remove('open');
+        document.body.style.overflow = '';
+    }
+};
+
+window.showInfoModal = function(type) {
+    const modal = document.getElementById('lunaria-info-modal');
+    const titleEl = document.getElementById('lunaria-modal-title');
+    const bodyEl = document.getElementById('lunaria-modal-body');
+    if (!modal || !titleEl || !bodyEl) return;
+
+    let title = '';
+    let body = '';
+
+    if (type === 'faq') {
+        title = 'Preguntas Frecuentes';
+        body = `
+            <h4>¿Cómo puedo realizar mi compra?</h4>
+            <p>Comprar en LUNARIA es sumamente fácil. Puedes añadir tus perfumes favoritos a tu bolsa de compras y hacer clic en <strong>Finalizar Compra</strong> en el carrito. Esto generará automáticamente un mensaje detallado para que nos contactes directamente por WhatsApp y coordinar el pago y envío. También puedes escribirnos de forma directa haciendo clic en el enlace de WhatsApp en el footer.</p>
+            
+            <h4>¿Los perfumes son 100% originales?</h4>
+            <p>Sí, absolutamente todos nuestros perfumes son originales en su empaque sellado original de fábrica. No comercializamos testers genéricos, imitaciones, ni fragancias manipuladas. Cuentan con códigos de lote (batch code) que puedes verificar libremente.</p>
+            
+            <h4>¿Cuáles son las formas de pago?</h4>
+            <p>Aceptamos transferencias bancarias directas, depósitos bancarios y pagos con tarjeta de crédito/débito de todos los bancos nacionales a través de un link de pago 100% seguro.</p>
+            
+            <h4>¿Tienen tienda física?</h4>
+            <p>Operamos principalmente como tienda online exclusiva con entregas garantizadas a nivel nacional por Servientrega. Esto nos permite mantener los precios más competitivos de Ecuador.</p>
+        `;
+    } else if (type === 'shipping') {
+        title = 'Políticas de Envío';
+        body = `
+            <h4>¿A qué ciudades de Ecuador realizan envíos?</h4>
+            <p>Realizamos envíos asegurados a todas las provincias y cantones del Ecuador (Quito, Guayaquil, Cuenca, Manta, Loja, etc.) a través de Servientrega.</p>
+            
+            <h4>¿Cuál es el costo del envío?</h4>
+            <p>Ofrecemos <strong>Envío Gratis</strong> a todo el país para compras acumuladas superiores a $100. Para pedidos inferiores a este monto, el costo del envío es de $5.00 a nivel nacional.</p>
+            
+            <h4>¿Cuánto tiempo tarda en llegar mi pedido?</h4>
+            <p>Una vez confirmado tu pago, tu pedido es despachado en el transcurso del día. El tiempo de entrega estimado es de 24 a 48 horas laborables (de lunes a viernes), dependiendo de tu ubicación geográfica.</p>
+            
+            <h4>¿Puedo realizar el rastreo de mi paquete?</h4>
+            <p>¡Por supuesto! Una vez que entreguemos tu pedido a Servientrega, te compartiremos el número de guía para que puedas realizar el rastreo en tiempo real desde la plataforma de Servientrega.</p>
+        `;
+    } else if (type === 'originality') {
+        title = 'Garantía de Originalidad';
+        body = `
+            <h4>Nuestra Promesa de Autenticidad</h4>
+            <p>En LUNARIA entendemos que la confianza lo es todo al adquirir perfumería de lujo. Por ello, garantizamos bajo contrato de satisfacción que cada una de nuestras fragancias es 100% original.</p>
+            
+            <h4>Verificación de Lote (Batch Code)</h4>
+            <p>Cada botella y caja incluye su código de lote único (Batch Code) grabado de fábrica por la casa perfumista. Puedes verificar la fecha de manufactura y originalidad del producto en portales globales de verificación independientes como CheckFresh o CheckCosmetic.</p>
+            
+            <h4>Empaques de Origen</h4>
+            <p>Los productos son entregados exactamente en las mismas condiciones en las que salen de fábrica: sellados con su celofán original (a excepción de las marcas que no utilizan celofán de fábrica, como algunas presentaciones específicas de marcas selectas) y en caja original.</p>
+        `;
+    }
+
+    titleEl.textContent = title;
+    bodyEl.innerHTML = body;
+    
+    modal.classList.add('open');
+    document.body.style.overflow = 'hidden';
+};
+
+window.openNotifyModal = function(categoryName) {
+    const modal = document.getElementById('lunaria-info-modal');
+    const titleEl = document.getElementById('lunaria-modal-title');
+    const bodyEl = document.getElementById('lunaria-modal-body');
+    if (!modal || !titleEl || !bodyEl) return;
+
+    titleEl.textContent = `Avísame cuando llegue: ${categoryName}`;
+    bodyEl.innerHTML = `
+        <p>La colección de perfumería <strong>${categoryName}</strong> estará disponible muy pronto. Regístrate a continuación y te notificaremos en exclusiva por correo o WhatsApp con un descuento especial de lanzamiento.</p>
+        <form onsubmit="submitNotifyForm(event, '${categoryName}')" style="margin-top: 20px;">
+            <div class="lunaria-form-group">
+                <label for="notify-name">Nombre Completo</label>
+                <input type="text" id="notify-name" class="lunaria-form-input" placeholder="Ej. Camila Sánchez" required>
+            </div>
+            <div class="lunaria-form-group">
+                <label for="notify-contact">Correo Electrónico o WhatsApp</label>
+                <input type="text" id="notify-contact" class="lunaria-form-input" placeholder="Ej. +593 99 522 0227" required>
+            </div>
+            <button type="submit" class="btn-modal-submit">Registrarme</button>
+        </form>
+    `;
+
+    modal.classList.add('open');
+    document.body.style.overflow = 'hidden';
+};
+
+window.submitNotifyForm = function(event, categoryName) {
+    event.preventDefault();
+    const name = document.getElementById('notify-name').value;
+    const contact = document.getElementById('notify-contact').value;
+    const bodyEl = document.getElementById('lunaria-modal-body');
+
+    // Simulate registration logic and show success message
+    if (bodyEl) {
+        bodyEl.innerHTML = `
+            <div class="success-notify-icon">✓</div>
+            <h4 style="text-align: center; margin-top: 10px;">¡Registro Exitoso!</h4>
+            <p style="text-align: center; margin-top: 10px;">Muchas gracias <strong>${name}</strong>. Hemos registrado tu interés por la colección de <strong>${categoryName}</strong>. Te notificaremos a <strong>${contact}</strong> en cuanto tengamos el stock disponible.</p>
+            <button class="btn-modal-submit" onclick="closeInfoModal()">Cerrar</button>
+        `;
+    }
+};
+
