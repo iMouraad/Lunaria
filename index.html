@@ -461,6 +461,7 @@
             width: max-content;
             padding: 8px 0 12px;
             animation: carousel-scroll 65s linear infinite;
+            -webkit-animation: carousel-scroll 65s linear infinite;
             will-change: transform;
             transform: translate3d(0, 0, 0);
             -webkit-transform: translate3d(0, 0, 0);
@@ -470,6 +471,17 @@
 
         .reviews-track:hover {
             animation-play-state: paused;
+        }
+
+        @-webkit-keyframes carousel-scroll {
+            0% {
+                transform: translate3d(0, 0, 0);
+                -webkit-transform: translate3d(0, 0, 0);
+            }
+            100% {
+                transform: translate3d(-50%, 0, 0);
+                -webkit-transform: translate3d(-50%, 0, 0);
+            }
         }
 
         @keyframes carousel-scroll {
@@ -1588,10 +1600,10 @@
             renderProducts();
         });
 
-        window.onload = () => {
+        document.addEventListener('DOMContentLoaded', () => {
             initCarousel();
             renderProducts();
-        };
+        });
     </script>
 </body>
 
