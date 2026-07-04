@@ -36,6 +36,10 @@
             box-sizing: border-box;
         }
 
+        html {
+            overflow-x: hidden;
+        }
+
         body {
             font-family: 'Lato', sans-serif;
             background: var(--blanco);
@@ -43,6 +47,8 @@
             line-height: 1.6;
             overflow-x: hidden;
             -webkit-font-smoothing: antialiased;
+            width: 100%;
+            max-width: 100vw;
         }
 
         h1,
@@ -1094,13 +1100,23 @@
             .header-nav-inner {
                 justify-content: flex-start;
                 overflow-x: auto;
+                overflow-y: hidden;
                 padding: 0 16px;
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: none;
+                -ms-overflow-style: none;
+            }
+
+            .header-nav-inner::-webkit-scrollbar {
+                display: none;
             }
 
             .header-nav-inner a {
                 padding: 0 14px;
                 font-size: 0.7rem;
                 letter-spacing: 1.5px;
+                white-space: nowrap;
+                flex-shrink: 0;
             }
 
             .main-content {
