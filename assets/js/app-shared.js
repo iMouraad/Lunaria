@@ -177,9 +177,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const mmToggle = document.getElementById('mobile-menu-toggle');
     if (mmToggle) {
-        mmToggle.addEventListener('click', () => {
-            alert('Menú móvil — próximamente disponible.');
-        });
+        mmToggle.addEventListener('click', openMobileDrawer);
     }
 
     // Run initial UI updates
@@ -389,6 +387,22 @@ function updateWishlist() {
 
 // Dynamic Modals for FAQ, Shipping Policy, Originality Guarantee, and Notify-Me
 document.addEventListener('DOMContentLoaded', () => {
+    // Setup Top-Bar Marquee
+    const topBar = document.querySelector('.top-bar');
+    if (topBar) {
+        const originalContent = topBar.innerHTML;
+        topBar.innerHTML = '';
+        const track = document.createElement('div');
+        track.className = 'top-bar-track';
+        for (let i = 0; i < 4; i++) {
+            const item = document.createElement('div');
+            item.className = 'top-bar-item';
+            item.innerHTML = originalContent;
+            track.appendChild(item);
+        }
+        topBar.appendChild(track);
+    }
+
     // Inject Modal HTML container at the end of body
     const modalHTML = `
     <div class="lunaria-modal-overlay" id="lunaria-info-modal">
@@ -405,9 +419,185 @@ document.addEventListener('DOMContentLoaded', () => {
     div.innerHTML = modalHTML;
     document.body.appendChild(div.firstElementChild);
 
-    // Inject CSS styles for Modals
+    // Inject Mobile Drawer HTML
+    const drawerHTML = `
+    <div class="mobile-drawer-overlay" id="mobile-drawer">
+        <div class="mobile-drawer-card">
+            <button class="mobile-drawer-close" id="mobile-drawer-close-btn">&times;</button>
+            <div class="mobile-drawer-logo">LUNARIA<span>.</span></div>
+            <nav class="mobile-drawer-nav">
+                <a href="index.html" onclick="closeMobileDrawer()">Inicio</a>
+                <a href="arabes.html" onclick="closeMobileDrawer()">Árabes</a>
+                <a href="designer.html" onclick="closeMobileDrawer()">Diseñador</a>
+                <a href="javascript:void(0)" onclick="openNotifyModal('Nicho'); closeMobileDrawer();">Nicho</a>
+                <a href="javascript:void(0)" onclick="openNotifyModal('Frescos'); closeMobileDrawer();">Frescos</a>
+            </nav>
+            <div class="mobile-drawer-divider"></div>
+            <div class="mobile-drawer-footer">
+                <a href="javascript:void(0)" onclick="showInfoModal('faq'); closeMobileDrawer();">Preguntas Frecuentes</a>
+                <a href="javascript:void(0)" onclick="showInfoModal('shipping'); closeMobileDrawer();">Políticas de Envío</a>
+                <a href="javascript:void(0)" onclick="showInfoModal('originality'); closeMobileDrawer();">Garantía de Originalidad</a>
+            </div>
+        </div>
+    </div>`;
+    
+    const drawerDiv = document.createElement('div');
+    drawerDiv.innerHTML = drawerHTML;
+    document.body.appendChild(drawerDiv.firstElementChild);
+
+    const mobileDrawer = document.getElementById('mobile-drawer');
+    const mobileDrawerClose = document.getElementById('mobile-drawer-close-btn');
+
+    window.closeMobileDrawer = function() {
+        if (mobileDrawer) {
+            mobileDrawer.classList.remove('open');
+            document.body.style.overflow = '';
+        }
+    };
+
+    window.openMobileDrawer = function() {
+        if (mobileDrawer) {
+            mobileDrawer.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+    };
+
+    if (mobileDrawerClose) {
+        mobileDrawerClose.addEventListener('click', closeMobileDrawer);
+    }
+    if (mobileDrawer) {
+        mobileDrawer.addEventListener('click', e => {
+            if (e.target === mobileDrawer) closeMobileDrawer();
+        });
+    }
+
+    // Inject CSS styles for Modals and Marquee/Drawer
     const modalStyle = document.createElement('style');
     modalStyle.textContent = `
+        /* Top Bar Marquee styles */
+        .top-bar {
+            overflow: hidden !important;
+            width: 100% !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: flex-start !important;
+            padding: 0 !important;
+        }
+        .top-bar-track {
+            display: flex;
+            align-items: center;
+            width: max-content;
+            animation: topbar-marquee 30s linear infinite;
+        }
+        .top-bar-item {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding-right: 40px;
+            white-space: nowrap;
+            font-size: 0.74rem;
+            font-weight: 700;
+            color: #fff;
+            letter-spacing: 2.5px;
+        }
+        @keyframes topbar-marquee {
+            0% { transform: translate3d(0, 0, 0); }
+            100% { transform: translate3d(-25%, 0, 0); }
+        }
+
+        /* Mobile Drawer styles */
+        .mobile-drawer-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 10000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        .mobile-drawer-overlay.open {
+            opacity: 1;
+            visibility: visible;
+        }
+        .mobile-drawer-card {
+            background: #14120f;
+            border-right: 1px solid rgba(201, 169, 110, 0.2);
+            width: 80%;
+            max-width: 300px;
+            height: 100%;
+            padding: 40px 30px;
+            box-shadow: 5px 0 25px rgba(0,0,0,0.5);
+            position: relative;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            text-align: left;
+        }
+        .mobile-drawer-overlay.open .mobile-drawer-card {
+            transform: translateX(0);
+        }
+        .mobile-drawer-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: transparent;
+            border: none;
+            color: #c9a96e;
+            font-size: 2rem;
+            cursor: pointer;
+            line-height: 1;
+        }
+        .mobile-drawer-logo {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2.2rem;
+            color: #fff;
+            margin-bottom: 40px;
+            letter-spacing: 4px;
+        }
+        .mobile-drawer-logo span {
+            color: #c9a96e;
+        }
+        .mobile-drawer-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .mobile-drawer-nav a {
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.85);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-weight: 700;
+            transition: color 0.2s;
+        }
+        .mobile-drawer-nav a:hover {
+            color: #c9a96e;
+        }
+        .mobile-drawer-divider {
+            height: 1px;
+            background: rgba(201, 169, 110, 0.15);
+            margin: 30px 0;
+        }
+        .mobile-drawer-footer {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: auto;
+        }
+        .mobile-drawer-footer a {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.5);
+            letter-spacing: 1px;
+        }
+        .mobile-drawer-footer a:hover {
+            color: #c9a96e;
+        }
         .lunaria-modal-overlay {
             position: fixed;
             top: 0;
