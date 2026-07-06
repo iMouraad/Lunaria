@@ -283,7 +283,7 @@ function performSearch(query, container) {
     container.innerHTML = limitResults.map(p => `
         <div class="search-item" onclick="window.location.href='producto.html?id=${p.id}'">
             <div class="search-item-img">
-                <img src="${p.image}" alt="${p.name}">
+                <img src="${p.image}" alt="${p.name}" loading="lazy">
             </div>
             <div class="search-item-info">
                 <div class="search-item-brand">${p.brand}</div>
@@ -398,7 +398,7 @@ function updateCart() {
     }
     container.innerHTML = cart.map((item, i) => `
         <div class="drawer-item">
-            <div class="drawer-item-img"><img src="${item.image}" alt="${item.name}"></div>
+            <div class="drawer-item-img"><img src="${item.image}" alt="${item.name}" loading="lazy"></div>
             <div class="drawer-item-details">
                 <div class="drawer-item-brand">${item.brand}</div>
                 <h4 class="drawer-item-name">${item.name}</h4>
@@ -421,7 +421,7 @@ function updateWishlist() {
     }
     container.innerHTML = perfumesData.filter(p => wishlist.includes(p.id)).map(item => `
         <div class="drawer-item">
-            <div class="drawer-item-img"><img src="${item.image}" alt="${item.name}"></div>
+            <div class="drawer-item-img"><img src="${item.image}" alt="${item.name}" loading="lazy"></div>
             <div class="drawer-item-details">
                 <div class="drawer-item-brand">${item.brand}</div>
                 <h4 class="drawer-item-name">${item.name}</h4>
