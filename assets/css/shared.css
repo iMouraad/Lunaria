@@ -269,7 +269,7 @@ a {
 .drawer-item-img {
             width: 70px;
             height: 70px;
-            background: var(--gris);
+            background: var(--blanco);
             border-radius: 6px;
             display: flex;
             align-items: center;
