@@ -188,6 +188,8 @@
                     titleEl.textContent = 'No pudimos confirmar el pago';
                     messageEl.textContent =
                         'PayPhone no reportó tu pago como aprobado. Si creés que sí se cobró, escribinos por WhatsApp con tu comprobante.';
+                    refEl.textContent = `Detalle técnico: HTTP ${result.debugHttpStatus} — ${JSON.stringify(result.debugResponse)}`;
+                    refEl.style.display = 'inline-block';
                 }
             } catch (err) {
                 iconEl.textContent = '⚠';

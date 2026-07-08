@@ -25,6 +25,7 @@ exports.handler = async (event) => {
     }
 
     let confirmation;
+    let ppHttpStatus;
     try {
         const ppRes = await fetch('https://paymentbox.payphonetodoesposible.com/api/confirm', {
             method: 'POST',
@@ -34,9 +35,12 @@ exports.handler = async (event) => {
             },
             body: JSON.stringify({ id: Number(id), clientTxId: clientTransactionId })
         });
+        ppHttpStatus = ppRes.status;
         confirmation = await ppRes.json();
+        console.log('PayPhone confirm response', ppHttpStatus, JSON.stringify(confirmation));
     } catch (err) {
-        return { statusCode: 502, body: JSON.stringify({ error: 'No se pudo contactar a PayPhone' }) };
+        console.error('Error calling PayPhone confirm:', err);
+        return { statusCode: 502, body: JSON.stringify({ error: 'No se pudo contactar a PayPhone', detail: String(err) }) };
     }
 
     const approved = !!(confirmation && confirmation.statusCode === 3);
@@ -70,7 +74,9 @@ exports.handler = async (event) => {
             transactionId: confirmation.transactionId,
             authorizationCode: confirmation.authorizationCode,
             amount: confirmation.amount,
-            cardBrand: confirmation.cardBrand
+            cardBrand: confirmation.cardBrand,
+            debugHttpStatus: ppHttpStatus,
+            debugResponse: confirmation
         })
     };
 };
