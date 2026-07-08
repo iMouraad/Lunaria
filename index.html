@@ -897,15 +897,22 @@
                 <h3 class="drawer-title">Mi Bolsa</h3>
                 <button class="drawer-close-btn" id="cart-drawer-close">&times;</button>
             </div>
-            <div class="drawer-items-list" id="cart-items-container"></div>
-            <div class="drawer-footer">
-                <div class="drawer-total-row">
-                    <span>Total:</span>
-                    <span id="cart-total-price">$0.00</span>
+            <div class="drawer-scroll-area">
+                <div class="drawer-items-list" id="cart-items-container"></div>
+                <div class="drawer-footer">
+                    <div class="drawer-total-row">
+                        <span>Total:</span>
+                        <span id="cart-total-price">$0.00</span>
+                    </div>
+                    <div class="shipping-form">
+                        <div class="shipping-form-title">Datos de envío</div>
+                        <input type="text" id="shipping-name" placeholder="Nombre completo">
+                        <input type="text" id="shipping-phone" placeholder="Teléfono / WhatsApp">
+                        <input type="text" id="shipping-address" placeholder="Dirección de envío">
+                        <input type="text" id="shipping-city" placeholder="Ciudad">
+                    </div>
+                    <div id="pp-button"></div>
                 </div>
-                <button class="btn-luxury" style="width:100%;">Finalizar Compra</button>
-                <div class="pp-pay-divider">o paga con tarjeta</div>
-                <div id="pp-button"></div>
             </div>
         </div>
     </div>
@@ -917,7 +924,9 @@
                 <h3 class="drawer-title">Favoritos</h3>
                 <button class="drawer-close-btn" id="wishlist-drawer-close">&times;</button>
             </div>
-            <div class="drawer-items-list" id="wishlist-items-container"></div>
+            <div class="drawer-scroll-area">
+                <div class="drawer-items-list" id="wishlist-items-container"></div>
+            </div>
         </div>
     </div>
 

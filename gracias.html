@@ -184,7 +184,16 @@
                 message += `\n*Total pagado:* $${total.toFixed(2)}\n`;
             }
 
-            message += '\n¿Me confirman la recepción del pago y los detalles del envío? ¡Gracias! ✨';
+            const shipping = getShippingInfo();
+            if (isShippingInfoComplete(shipping)) {
+                message += '\n*Datos de envío:*\n';
+                message += `Nombre: ${shipping['shipping-name']}\n`;
+                message += `Teléfono: ${shipping['shipping-phone']}\n`;
+                message += `Dirección: ${shipping['shipping-address']}\n`;
+                message += `Ciudad: ${shipping['shipping-city']}\n`;
+            }
+
+            message += '\n¿Me confirman la recepción del pago? ¡Gracias! ✨';
 
             const encodedMessage = encodeURIComponent(message);
             const whatsappUrl = `https://wa.me/${getWhatsAppNumber()}?text=${encodedMessage}`;

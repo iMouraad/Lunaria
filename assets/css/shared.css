@@ -249,9 +249,14 @@ a {
             transform: rotate(90deg);
         }
 
-.drawer-items-list {
+.drawer-scroll-area {
             flex-grow: 1;
             overflow-y: auto;
+            min-height: 0;
+            overscroll-behavior: contain;
+        }
+
+.drawer-items-list {
             display: flex;
             flex-direction: column;
             gap: 20px;
@@ -341,6 +346,48 @@ a {
             margin-bottom: 20px;
             text-transform: uppercase;
             letter-spacing: 1px;
+        }
+
+.shipping-form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+.shipping-form-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 700;
+            color: var(--texto-sec);
+        }
+
+.shipping-form input {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1.5px solid var(--borde);
+            border-radius: 8px;
+            font-family: 'Lato', sans-serif;
+            font-size: 0.85rem;
+            color: var(--chocolate);
+            background: var(--gris);
+            outline: none;
+            transition: var(--ease);
+        }
+
+.shipping-form input:focus {
+            border-color: var(--dorado);
+            background: var(--blanco);
+        }
+
+.pp-pay-hint {
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--texto-sec);
+            padding: 10px;
+            background: var(--gris);
+            border-radius: 8px;
         }
 
 .search-overlay.open {

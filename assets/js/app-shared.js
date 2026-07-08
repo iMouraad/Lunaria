@@ -206,12 +206,19 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Bind checkout buttons
-    const checkoutBtns = document.querySelectorAll('.drawer-footer .btn-luxury');
-    checkoutBtns.forEach(btn => {
-        if (btn.textContent.trim() === 'Finalizar Compra') {
-            btn.addEventListener('click', checkoutWhatsApp);
-        }
+    // Shipping form: restore saved values and keep them (and the payment button) in sync as the customer types
+    const shippingFields = ['shipping-name', 'shipping-phone', 'shipping-address', 'shipping-city'];
+    const savedShipping = JSON.parse(localStorage.getItem('lunaria_shipping') || '{}');
+    shippingFields.forEach(id => {
+        const input = document.getElementById(id);
+        if (!input) return;
+        if (savedShipping[id]) input.value = savedShipping[id];
+        input.addEventListener('input', () => {
+            const data = JSON.parse(localStorage.getItem('lunaria_shipping') || '{}');
+            data[id] = input.value;
+            localStorage.setItem('lunaria_shipping', JSON.stringify(data));
+            renderPayphoneButton(cart.reduce((s, x) => s + x.price, 0));
+        });
     });
 
     document.addEventListener('keydown', e => {
@@ -309,44 +316,6 @@ function getWhatsAppNumber() {
     return whatsappNumber;
 }
 
-function checkoutWhatsApp() {
-    if (cart.length === 0) {
-        alert("Tu bolsa de compras está vacía. Agrega algunos perfumes antes de finalizar tu compra.");
-        return;
-    }
-
-    // Build the message
-    let message = "¡Hola LUNARIA! 🌟\n\nEstoy interesado(a) en adquirir las siguientes fragancias de su catálogo:\n\n";
-    
-    // Group items by ID to show quantities
-    const itemGroups = {};
-    cart.forEach(item => {
-        if (itemGroups[item.id]) {
-            itemGroups[item.id].qty += 1;
-        } else {
-            itemGroups[item.id] = {
-                product: item,
-                qty: 1
-            };
-        }
-    });
-
-    let total = 0;
-    Object.values(itemGroups).forEach(group => {
-        const item = group.product;
-        const subtotal = item.price * group.qty;
-        total += subtotal;
-        message += `• *${item.brand} - ${item.name}* (${item.size}, ${item.type}) \n  Cantidad: ${group.qty} · Subtotal: $${subtotal.toFixed(2)}\n\n`;
-    });
-
-    message += `*Total estimado:* $${total.toFixed(2)}\n\n`;
-    message += "¿Me podrían indicar cómo proceder con el pago y los detalles del envío? ¡Muchas gracias! ✨";
-
-    // Encode message for WhatsApp URL
-    const encodedMessage = encodeURIComponent(message);
-    const whatsappUrl = `https://wa.me/${getWhatsAppNumber()}?text=${encodedMessage}`;
-    window.open(whatsappUrl, '_blank');
-}
 
 // Global actions
 window.addToCart = function(id, selectedSize = null) {
@@ -393,12 +362,28 @@ window.toggleWishlist = function(id) {
 const PAYPHONE_TOKEN = 'yRrL85E1d5cMuH-R0nB8YEOGWttKZj3W61y9ivU9kul5qIRu0BNopCYwlOv4dRvNvxm0AieXAAkLyw5p9ecIGQ3iIM-gMAZhABx8B19e2zJJG2nekigUUTYp65lIr9hOGo19nelKTeK7tp1Bi5S2_o_0htVOYf5yBGYjlBr9nC4savTSmXp97pGD2flObW_9j5Nn_3LbPHRtRQy2DVoF7TGmAmFYHwt4Dqvxlp47O_4i1oxv5sarEq-PYaWPhP0ui306cF0ZRgRflaGFjJ-EFgOoXLp6TxSmkkFzbS91uNElk_gT7hz7c09RLotWX32NozemVLPdsTpycoOHP7wMLo4NlvQ';
 const PAYPHONE_STORE_ID = 'b27bc1b7-c044-490c-8716-31646c675050';
 
+function getShippingInfo() {
+    return JSON.parse(localStorage.getItem('lunaria_shipping') || '{}');
+}
+
+function isShippingInfoComplete(shipping) {
+    return !!(shipping['shipping-name'] && shipping['shipping-phone'] && shipping['shipping-address'] && shipping['shipping-city']);
+}
+
 function renderPayphoneButton(total) {
     const ppContainer = document.getElementById('pp-button');
     if (!ppContainer) return;
     ppContainer.innerHTML = '';
 
-    if (!total || total <= 0 || typeof PPaymentButtonBox === 'undefined') return;
+    if (!total || total <= 0) return;
+
+    const shipping = getShippingInfo();
+    if (!isShippingInfoComplete(shipping)) {
+        ppContainer.innerHTML = `<div class="pp-pay-hint">Completá tus datos de envío para pagar con tarjeta.</div>`;
+        return;
+    }
+
+    if (typeof PPaymentButtonBox === 'undefined') return;
 
     const amountInCents = Math.round(total * 100);
 
@@ -414,6 +399,7 @@ function renderPayphoneButton(total) {
         currency: 'USD',
         clientTransactionId: `LUNARIA-${Date.now()}`,
         reference: 'Compra en LUNARIA Perfumería',
+        phoneNumber: shipping['shipping-phone'],
         lang: 'es',
         defaultMethod: 'card'
     }).render('pp-button');
