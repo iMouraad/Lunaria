@@ -266,6 +266,15 @@ a {
             padding-bottom: 15px;
         }
 
+.pp-pay-divider {
+    text-align: center;
+    font-size: 0.75rem;
+    color: var(--texto-sec);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin: 14px 0 10px;
+}
+
 .drawer-item-img {
             width: 70px;
             height: 70px;

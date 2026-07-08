@@ -386,6 +386,39 @@ window.toggleWishlist = function(id) {
     document.dispatchEvent(new CustomEvent('wishlistUpdated', { detail: { wishlist } }));
 };
 
+// PayPhone - Cajita de Pagos (AMBIENTE DE PRUEBAS / SANDBOX).
+// Estas transacciones se aprueban pero NUNCA tocan el sistema bancario real.
+// Antes de cobrar de verdad hay que reemplazar PAYPHONE_TOKEN y PAYPHONE_STORE_ID
+// por las credenciales del entorno de Producción en el panel de PayPhone.
+const PAYPHONE_TOKEN = 'yRrL85E1d5cMuH-R0nB8YEOGWttKZj3W61y9ivU9kul5qIRu0BNopCYwlOv4dRvNvxm0AieXAAkLyw5p9ecIGQ3iIM-gMAZhABx8B19e2zJJG2nekigUUTYp65lIr9hOGo19nelKTeK7tp1Bi5S2_o_0htVOYf5yBGYjlBr9nC4savTSmXp97pGD2flObW_9j5Nn_3LbPHRtRQy2DVoF7TGmAmFYHwt4Dqvxlp47O_4i1oxv5sarEq-PYaWPhP0ui306cF0ZRgRflaGFjJ-EFgOoXLp6TxSmkkFzbS91uNElk_gT7hz7c09RLotWX32NozemVLPdsTpycoOHP7wMLo4NlvQ';
+const PAYPHONE_STORE_ID = 'b27bc1b7-c044-490c-8716-31646c675050';
+
+function renderPayphoneButton(total) {
+    const ppContainer = document.getElementById('pp-button');
+    if (!ppContainer) return;
+    ppContainer.innerHTML = '';
+
+    if (!total || total <= 0 || typeof PPaymentButtonBox === 'undefined') return;
+
+    const amountInCents = Math.round(total * 100);
+
+    new PPaymentButtonBox({
+        token: PAYPHONE_TOKEN,
+        storeId: PAYPHONE_STORE_ID,
+        amount: amountInCents,
+        amountWithoutTax: amountInCents,
+        amountWithTax: 0,
+        tax: 0,
+        service: 0,
+        tip: 0,
+        currency: 'USD',
+        clientTransactionId: `LUNARIA-${Date.now()}`,
+        reference: 'Compra en LUNARIA Perfumería',
+        lang: 'es',
+        defaultMethod: 'card'
+    }).render('pp-button');
+}
+
 function updateCart() {
     if (cartCountEl) cartCountEl.textContent = cart.length;
     const container = document.getElementById('cart-items-container');
@@ -393,7 +426,8 @@ function updateCart() {
     if (!container) return;
     if (!cart.length) {
         container.innerHTML = `<p style="text-align:center;color:var(--texto-sec);margin-top:30px;">Tu bolsa está vacía.</p>`;
-        if (totalEl) totalEl.textContent = "$0.00"; 
+        if (totalEl) totalEl.textContent = "$0.00";
+        renderPayphoneButton(0);
         return;
     }
     container.innerHTML = cart.map((item, i) => `
@@ -406,9 +440,11 @@ function updateCart() {
                 <button class="drawer-item-remove" onclick="removeFromCart(${i})">Eliminar</button>
             </div>
         </div>`).join('');
+    const total = cart.reduce((s, x) => s + x.price, 0);
     if (totalEl) {
-        totalEl.textContent = `$${cart.reduce((s, x) => s + x.price, 0).toFixed(2)}`;
+        totalEl.textContent = `$${total.toFixed(2)}`;
     }
+    renderPayphoneButton(total);
 }
 
 function updateWishlist() {
