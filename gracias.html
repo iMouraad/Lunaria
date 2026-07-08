@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>¡Gracias por tu compra! | LUNARIA</title>
+    <link rel="icon" href="assets/images/favicon.png" type="image/png">
+    <meta name="description" content="Confirmación de pago - LUNARIA Perfumería.">
+    <meta name="robots" content="noindex">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Lato:wght@300;400;700&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="assets/css/shared.css">
+    <style>
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+
+        .gracias-card {
+            max-width: 520px;
+            width: 100%;
+            text-align: center;
+            background: var(--blanco);
+            border: 1px solid var(--borde);
+            border-radius: 16px;
+            padding: 50px 40px;
+            box-shadow: 0 15px 40px rgba(42, 31, 14, 0.06);
+        }
+
+        .gracias-logo {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.9rem;
+            letter-spacing: 6px;
+            text-transform: uppercase;
+            font-weight: 300;
+            color: var(--negro);
+            display: inline-block;
+            margin-bottom: 30px;
+        }
+
+        .gracias-logo span {
+            color: var(--dorado);
+            font-weight: 600;
+        }
+
+        .gracias-icon {
+            font-size: 3.5rem;
+            color: var(--dorado);
+            margin-bottom: 20px;
+        }
+
+        .gracias-card h1 {
+            font-size: 1.8rem;
+            font-weight: 400;
+            color: var(--chocolate);
+            margin-bottom: 15px;
+        }
+
+        .gracias-card p {
+            font-size: 0.95rem;
+            color: var(--texto-sec);
+            line-height: 1.7;
+            margin-bottom: 10px;
+        }
+
+        .gracias-ref {
+            display: inline-block;
+            margin: 15px 0 25px;
+            padding: 10px 20px;
+            background: var(--gris);
+            border-radius: 8px;
+            font-size: 0.85rem;
+            color: var(--chocolate);
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .gracias-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .btn-whatsapp {
+            display: inline-block;
+            background: #25D366;
+            color: #fff;
+            padding: 14px 30px;
+            font-family: 'Lato', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: var(--ease);
+        }
+
+        .btn-whatsapp:hover {
+            background: #1ebe57;
+        }
+
+        .gracias-back {
+            font-size: 0.8rem;
+            color: var(--texto-sec);
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+    <a href="https://wa.me/593995220227" style="display:none;" aria-hidden="true"></a>
+    <div class="gracias-card">
+        <a href="index.html" class="gracias-logo">LUNARIA<span>.</span></a>
+        <div class="gracias-icon" id="gracias-icon">✓</div>
+        <h1 id="gracias-title">¡Gracias por tu compra!</h1>
+        <p id="gracias-message">
+            Tu pago fue procesado. Para confirmar el envío de tu pedido, tocá el botón de abajo y mandanos el
+            comprobante por WhatsApp — así verificamos la transacción y coordinamos la entrega.
+        </p>
+        <div class="gracias-ref" id="gracias-ref" style="display:none;"></div>
+        <div class="gracias-actions">
+            <button class="btn-whatsapp" id="btn-confirmar-whatsapp">Confirmar pedido por WhatsApp</button>
+            <a href="index.html" class="gracias-back">Volver a la tienda</a>
+        </div>
+    </div>
+
+    <script src="assets/js/products-data.js"></script>
+    <script src="assets/js/app-shared.js"></script>
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const transactionId = params.get('id');
+        const clientTransactionId = params.get('clientTransactionId');
+
+        if (transactionId) {
+            const refEl = document.getElementById('gracias-ref');
+            refEl.textContent = `N° de transacción PayPhone: ${transactionId}`;
+            refEl.style.display = 'inline-block';
+        } else {
+            document.getElementById('gracias-icon').textContent = '⚠';
+            document.getElementById('gracias-title').textContent = 'No encontramos tu transacción';
+            document.getElementById('gracias-message').textContent =
+                'No detectamos un pago reciente en esta página. Si ya pagaste y ves esto por error, escribinos por WhatsApp con tu comprobante.';
+        }
+
+        document.getElementById('btn-confirmar-whatsapp').addEventListener('click', () => {
+            let message = '¡Hola LUNARIA! 🌟\n\nAcabo de realizar un pago con tarjeta a través de PayPhone.\n\n';
+
+            if (transactionId) {
+                message += `*N° de transacción:* ${transactionId}\n`;
+            }
+            if (clientTransactionId) {
+                message += `*Referencia de pedido:* ${clientTransactionId}\n`;
+            }
+
+            if (cart.length) {
+                message += '\n*Detalle del pedido:*\n';
+                const itemGroups = {};
+                cart.forEach(item => {
+                    if (itemGroups[item.id]) {
+                        itemGroups[item.id].qty += 1;
+                    } else {
+                        itemGroups[item.id] = { product: item, qty: 1 };
+                    }
+                });
+                let total = 0;
+                Object.values(itemGroups).forEach(group => {
+                    const item = group.product;
+                    const subtotal = item.price * group.qty;
+                    total += subtotal;
+                    message += `• *${item.brand} - ${item.name}* (${item.size}, ${item.type}) — Cantidad: ${group.qty} · $${subtotal.toFixed(2)}\n`;
+                });
+                message += `\n*Total pagado:* $${total.toFixed(2)}\n`;
+            }
+
+            message += '\n¿Me confirman la recepción del pago y los detalles del envío? ¡Gracias! ✨';
+
+            const encodedMessage = encodeURIComponent(message);
+            const whatsappUrl = `https://wa.me/${getWhatsAppNumber()}?text=${encodedMessage}`;
+            window.open(whatsappUrl, '_blank');
+
+            if (transactionId) {
+                localStorage.removeItem('lunaria_cart');
+                cart = [];
+            }
+        });
+    </script>
+</body>
+
+</html>
