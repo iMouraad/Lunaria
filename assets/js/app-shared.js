@@ -206,19 +206,29 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Shipping form: restore saved values, and only re-render the payment button when
-    // completeness actually flips (not on every keystroke, which caused it to flicker).
-    const shippingFields = ['shipping-name', 'shipping-cedula', 'shipping-phone', 'shipping-address', 'shipping-city'];
+    // Shipping form: restore saved values, validate as the customer types, and only
+    // re-render the payment button when completeness actually flips (not on every
+    // keystroke, which caused it to flicker).
     const savedShipping = JSON.parse(localStorage.getItem('lunaria_shipping') || '{}');
     let wasShippingComplete = isShippingInfoComplete(savedShipping);
-    shippingFields.forEach(id => {
+    SHIPPING_FIELDS.forEach(id => {
         const input = document.getElementById(id);
         if (!input) return;
+
+        const errorEl = document.createElement('div');
+        errorEl.className = 'shipping-error';
+        input.insertAdjacentElement('afterend', errorEl);
+
         if (savedShipping[id]) input.value = savedShipping[id];
+
         input.addEventListener('input', () => {
             const data = JSON.parse(localStorage.getItem('lunaria_shipping') || '{}');
             data[id] = input.value;
             localStorage.setItem('lunaria_shipping', JSON.stringify(data));
+
+            const error = input.value ? SHIPPING_VALIDATORS[id](input.value) : '';
+            errorEl.textContent = error;
+            input.classList.toggle('invalid', !!error);
 
             const nowComplete = isShippingInfoComplete(data);
             if (nowComplete !== wasShippingComplete) {
@@ -369,12 +379,24 @@ window.toggleWishlist = function(id) {
 const PAYPHONE_TOKEN = 'yRrL85E1d5cMuH-R0nB8YEOGWttKZj3W61y9ivU9kul5qIRu0BNopCYwlOv4dRvNvxm0AieXAAkLyw5p9ecIGQ3iIM-gMAZhABx8B19e2zJJG2nekigUUTYp65lIr9hOGo19nelKTeK7tp1Bi5S2_o_0htVOYf5yBGYjlBr9nC4savTSmXp97pGD2flObW_9j5Nn_3LbPHRtRQy2DVoF7TGmAmFYHwt4Dqvxlp47O_4i1oxv5sarEq-PYaWPhP0ui306cF0ZRgRflaGFjJ-EFgOoXLp6TxSmkkFzbS91uNElk_gT7hz7c09RLotWX32NozemVLPdsTpycoOHP7wMLo4NlvQ';
 const PAYPHONE_STORE_ID = 'b27bc1b7-c044-490c-8716-31646c675050';
 
+const SHIPPING_VALIDATORS = {
+    'shipping-name': v => v.trim().length >= 3 ? '' : 'Ingresá tu nombre completo',
+    'shipping-cedula': v => /^\d{10}$/.test(v.trim()) ? '' : 'La cédula debe tener 10 dígitos',
+    'shipping-phone': v => {
+        const digits = v.replace(/\D/g, '');
+        return (digits.length >= 7 && digits.length <= 13) ? '' : 'Ingresá un teléfono válido';
+    },
+    'shipping-address': v => v.trim().length >= 5 ? '' : 'Ingresá una dirección válida',
+    'shipping-city': v => v.trim().length >= 2 ? '' : 'Ingresá tu ciudad'
+};
+const SHIPPING_FIELDS = Object.keys(SHIPPING_VALIDATORS);
+
 function getShippingInfo() {
     return JSON.parse(localStorage.getItem('lunaria_shipping') || '{}');
 }
 
 function isShippingInfoComplete(shipping) {
-    return !!(shipping['shipping-name'] && shipping['shipping-cedula'] && shipping['shipping-phone'] && shipping['shipping-address'] && shipping['shipping-city']);
+    return SHIPPING_FIELDS.every(id => SHIPPING_VALIDATORS[id](shipping[id] || '') === '');
 }
 
 function renderPayphoneButton(total) {

@@ -142,17 +142,64 @@
         const params = new URLSearchParams(window.location.search);
         const transactionId = params.get('id');
         const clientTransactionId = params.get('clientTransactionId');
+        let serverConfirmed = false;
 
-        if (transactionId) {
-            const refEl = document.getElementById('gracias-ref');
-            refEl.textContent = `N° de transacción PayPhone: ${transactionId}`;
-            refEl.style.display = 'inline-block';
-        } else {
-            document.getElementById('gracias-icon').textContent = '⚠';
-            document.getElementById('gracias-title').textContent = 'No encontramos tu transacción';
-            document.getElementById('gracias-message').textContent =
-                'No detectamos un pago reciente en esta página. Si ya pagaste y ves esto por error, escribinos por WhatsApp con tu comprobante.';
+        const iconEl = document.getElementById('gracias-icon');
+        const titleEl = document.getElementById('gracias-title');
+        const messageEl = document.getElementById('gracias-message');
+        const refEl = document.getElementById('gracias-ref');
+
+        async function confirmOrder() {
+            if (!transactionId || !clientTransactionId) {
+                iconEl.textContent = '⚠';
+                titleEl.textContent = 'No encontramos tu transacción';
+                messageEl.textContent =
+                    'No detectamos un pago reciente en esta página. Si ya pagaste y ves esto por error, escribinos por WhatsApp con tu comprobante.';
+                return;
+            }
+
+            iconEl.textContent = '⏳';
+            titleEl.textContent = 'Verificando tu pago...';
+            messageEl.textContent = 'Danos un segundo mientras confirmamos la transacción con PayPhone.';
+
+            try {
+                const res = await fetch('/.netlify/functions/confirm-order', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        id: transactionId,
+                        clientTransactionId,
+                        shipping: getShippingInfo(),
+                        cart
+                    })
+                });
+                const result = await res.json();
+
+                if (result.approved) {
+                    serverConfirmed = true;
+                    iconEl.textContent = '✓';
+                    titleEl.textContent = '¡Gracias por tu compra!';
+                    messageEl.textContent =
+                        'Tu pago fue verificado y tu pedido ya quedó registrado. Si querés, mandanos igual un mensaje por WhatsApp para coordinar la entrega más rápido.';
+                    refEl.textContent = `N° de transacción PayPhone: ${result.transactionId || transactionId}`;
+                    refEl.style.display = 'inline-block';
+                } else {
+                    iconEl.textContent = '⚠';
+                    titleEl.textContent = 'No pudimos confirmar el pago';
+                    messageEl.textContent =
+                        'PayPhone no reportó tu pago como aprobado. Si creés que sí se cobró, escribinos por WhatsApp con tu comprobante.';
+                }
+            } catch (err) {
+                iconEl.textContent = '⚠';
+                titleEl.textContent = 'No pudimos verificar el pago automáticamente';
+                messageEl.textContent =
+                    'Hubo un problema de conexión al confirmar tu pago. Mandanos el comprobante por WhatsApp para que lo revisemos a mano.';
+                refEl.textContent = `N° de transacción PayPhone: ${transactionId}`;
+                refEl.style.display = 'inline-block';
+            }
         }
+
+        confirmOrder();
 
         document.getElementById('btn-confirmar-whatsapp').addEventListener('click', () => {
             let message = '¡Hola LUNARIA! 🌟\n\nAcabo de realizar un pago con tarjeta a través de PayPhone.\n\n';

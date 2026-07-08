@@ -381,6 +381,17 @@ a {
             background: var(--blanco);
         }
 
+.shipping-form input.invalid {
+            border-color: #c0392b;
+        }
+
+.shipping-error {
+            font-size: 0.72rem;
+            color: #c0392b;
+            margin-top: -4px;
+            min-height: 1em;
+        }
+
 .pp-pay-hint {
             text-align: center;
             font-size: 0.8rem;
