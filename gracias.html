@@ -184,12 +184,13 @@
                     refEl.textContent = `N° de transacción PayPhone: ${result.transactionId || transactionId}`;
                     refEl.style.display = 'inline-block';
                 } else {
+                    console.error('PayPhone confirm not approved:', result.debugHttpStatus, result.debugResponse);
                     iconEl.textContent = '⚠';
-                    titleEl.textContent = 'No pudimos confirmar el pago';
-                    messageEl.textContent =
-                        'PayPhone no reportó tu pago como aprobado. Si creés que sí se cobró, escribinos por WhatsApp con tu comprobante.';
-                    refEl.textContent = `Detalle técnico: HTTP ${result.debugHttpStatus} — ${JSON.stringify(result.debugResponse)}`;
-                    refEl.style.display = 'inline-block';
+                    titleEl.textContent = 'Tu pago no pudo procesarse';
+                    const declineReason = result.debugResponse && result.debugResponse.message;
+                    messageEl.textContent = declineReason
+                        ? `${declineReason} No se realizó ningún cobro. Podés intentar de nuevo con otra tarjeta.`
+                        : 'La transacción no fue aprobada y no se realizó ningún cobro. Podés intentar de nuevo con otra tarjeta, o escribinos por WhatsApp si necesitás ayuda.';
                 }
             } catch (err) {
                 iconEl.textContent = '⚠';
