@@ -188,6 +188,7 @@
             if (isShippingInfoComplete(shipping)) {
                 message += '\n*Datos de envío:*\n';
                 message += `Nombre: ${shipping['shipping-name']}\n`;
+                message += `Cédula: ${shipping['shipping-cedula']}\n`;
                 message += `Teléfono: ${shipping['shipping-phone']}\n`;
                 message += `Dirección: ${shipping['shipping-address']}\n`;
                 message += `Ciudad: ${shipping['shipping-city']}\n`;

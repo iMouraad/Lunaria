@@ -206,9 +206,11 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Shipping form: restore saved values and keep them (and the payment button) in sync as the customer types
-    const shippingFields = ['shipping-name', 'shipping-phone', 'shipping-address', 'shipping-city'];
+    // Shipping form: restore saved values, and only re-render the payment button when
+    // completeness actually flips (not on every keystroke, which caused it to flicker).
+    const shippingFields = ['shipping-name', 'shipping-cedula', 'shipping-phone', 'shipping-address', 'shipping-city'];
     const savedShipping = JSON.parse(localStorage.getItem('lunaria_shipping') || '{}');
+    let wasShippingComplete = isShippingInfoComplete(savedShipping);
     shippingFields.forEach(id => {
         const input = document.getElementById(id);
         if (!input) return;
@@ -217,7 +219,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = JSON.parse(localStorage.getItem('lunaria_shipping') || '{}');
             data[id] = input.value;
             localStorage.setItem('lunaria_shipping', JSON.stringify(data));
-            renderPayphoneButton(cart.reduce((s, x) => s + x.price, 0));
+
+            const nowComplete = isShippingInfoComplete(data);
+            if (nowComplete !== wasShippingComplete) {
+                wasShippingComplete = nowComplete;
+                renderPayphoneButton(cart.reduce((s, x) => s + x.price, 0));
+            }
         });
     });
 
@@ -367,7 +374,7 @@ function getShippingInfo() {
 }
 
 function isShippingInfoComplete(shipping) {
-    return !!(shipping['shipping-name'] && shipping['shipping-phone'] && shipping['shipping-address'] && shipping['shipping-city']);
+    return !!(shipping['shipping-name'] && shipping['shipping-cedula'] && shipping['shipping-phone'] && shipping['shipping-address'] && shipping['shipping-city']);
 }
 
 function renderPayphoneButton(total) {
@@ -400,6 +407,8 @@ function renderPayphoneButton(total) {
         clientTransactionId: `LUNARIA-${Date.now()}`,
         reference: 'Compra en LUNARIA Perfumería',
         phoneNumber: shipping['shipping-phone'],
+        documentId: shipping['shipping-cedula'],
+        identificationType: 1,
         lang: 'es',
         defaultMethod: 'card'
     }).render('pp-button');
